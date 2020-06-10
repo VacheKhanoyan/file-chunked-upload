@@ -1,16 +1,8 @@
 const { ApolloServer, gql } = require("apollo-server-express");
-const {
-  createWriteStream,
-  existsSync,
-  mkdirSync,
-  ReadStream,
-  writeFile,
-} = require("fs");
-var stream = require("stream");
+const { existsSync, mkdirSync, writeFile } = require("fs");
 const path = require("path");
 const express = require("express");
 
-const files = [];
 const filesObj = {};
 
 const typeDefs = gql`
@@ -24,18 +16,25 @@ const typeDefs = gql`
 
 const resolvers = {
   Query: {
-    upload: ()=>true,
+    upload: () => true,
   },
   Mutation: {
     uploadFile: async (_, { file }) => {
-      const { chunk, chunkId, chunkProgress, sumUp = 0, filename, type } = await file;
+      const {
+        chunk,
+        chunkId,
+        chunkProgress,
+        sumUp = 0,
+        filename,
+        type,
+      } = await file;
       const { createReadStream } = await chunk;
       console.log("1122", chunk);
       if (!(chunkId in filesObj)) {
         filesObj[chunkId] = [];
       }
       const readStream = createReadStream(`${chunkId}`, { highWaterMark: 5 });
-      
+
       const chunks = [];
       readStream
         .on("data", (chunk) => {
@@ -47,7 +46,7 @@ const resolvers = {
             path.join(__dirname, "../images", `${chunkId}.${type}`),
             Buffer.concat(filesObj[chunkId]),
             () => {
-              console.log('end');
+              console.log("end");
             }
           );
         });

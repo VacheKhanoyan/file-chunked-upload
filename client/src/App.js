@@ -59,45 +59,22 @@ const App = () => {
         return chunkObj;
       }
     }
-    // for (let i = 0; i < chunksAmount; ++i) {
-    //   let byteEnd = Math.ceil((file.size / chunksAmount) * (i + 1));
-    //   let chunkProgress =
-    //     i === 0
-    //       ? "start"
-    //       : i > 0 && i < chunksAmount - 1
-    //       ? "inProgress"
-    //       : "end";
-
-    //   const chunkObj = {
-    //     chunk: file.slice(byteIndex, byteEnd),
-    //     filename: file.name,
-    //     chunkId: i + 1,
-    //     chunkProgress,
-    //   };
-    //   chunkedSumUpSize += chunkObj.chunk.size;
-    //   chunkProgress === "end" && (chunkObj.sumUp = chunkedSumUpSize);
-    //   chunks.push(chunkObj);
-    //   byteIndex += byteEnd - byteIndex;
-    // }
     return chunkBuilder;
   }
 
   const onUpload = () => {
-
     const chukedFilesList = filesList.map((file) => sliceFile(file, 100000));
     let res = true;
     console.log("sadasd", chukedFilesList, filesList);
     chukedFilesList.forEach(async (chunckedRequest, index) => {
-
       let fileProgres = "start";
-      
+
       while (fileProgres !== "end") {
-        let file = chunckedRequest()
-        fileProgres = file.chunkProgress
+        let file = chunckedRequest();
+        fileProgres = file.chunkProgress;
         await uploadFile({ variables: { file } });
       }
     });
-  
   };
 
   const props = {
